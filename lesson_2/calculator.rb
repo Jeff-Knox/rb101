@@ -90,9 +90,9 @@ def calculate_result(info = {})
   end
 end
 
-def store_in_mem?
+def get_y_n?(prompt = "Default y/n prompt")
   loop do
-    puts "Do you want to store the result to memory? [y/n]"
+    puts prompt << " [y/n]"
     user_input = gets.chomp
     if user_input == 'y'
       return true
@@ -106,38 +106,21 @@ def store_in_mem?
     end
   end
 end
-
-def continue?
-  loop do
-    puts "Do you want to continue using the calculator? [y/n]"
-    user_input = gets.chomp
-    if user_input == 'y'
-      return true
-      break
-    elsif user_input == 'n'
-      return false
-      break
-    else
-      puts "Invalid input. Try again."
-      next
-    end
-  end
-end
-
 
 def main
   info_hash = {}
   mem = []
+
   loop do
     info_hash[:num1] = get_number(mem)
     info_hash[:operation] = get_operation
     info_hash[:num2] = get_number
     result = calculate_result(info_hash)
-    if store_in_mem?
+    if get_y_n?("Do you want to store in mem?")
       mem.push(result) 
       puts "#{result} stored at mem#{mem.length - 1}"
     end 
-    unless continue?
+    unless get_y_n?("Do you want to continue?")
       puts "Thanks for using my calculator!"
       break
     end
