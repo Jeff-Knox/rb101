@@ -1,8 +1,3 @@
-# Get user input in the form of num1, num2, operation type, return a hash with values. Check if user wanted to input a number stored in memory
-# Calculate based on the given hash
-# Ask if user wants to store the value to memory, and if they want to continue
-# If store to memory, output a prompt that lets the user know what memory index it was stored to ex. "mem0", "mem1"
-
 def get_number(pass_mem = [])
   num = ''
   loop do
