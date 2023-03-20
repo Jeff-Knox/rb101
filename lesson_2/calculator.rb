@@ -1,3 +1,5 @@
+
+# Gets number, checks if user is trying to access memory. If they are, returns the number stored at index specified
 def get_number(pass_mem = [])
   num = ''
   loop do
@@ -21,6 +23,7 @@ def get_number(pass_mem = [])
   num
 end
 
+# Gets the operation type the user wishes to perform, checks it against a list of options allowed.
 def get_operation
   operation_to_perform = ''
   loop do
@@ -43,7 +46,7 @@ def get_operation
   operation_to_perform 
 end
 
-
+# Calculates and prints result based on the info passed in through a hash.
 def calculate_result(info = {})
   first_num = info[:num1]
   second_num = info[:num2]
@@ -85,6 +88,7 @@ def calculate_result(info = {})
   end
 end
 
+# Generic [y/n] prompt. Can modify the prompt message by passing in a string.
 def get_y_n?(prompt = "Default y/n prompt")
   loop do
     puts prompt << " [y/n]"
@@ -99,6 +103,7 @@ def get_y_n?(prompt = "Default y/n prompt")
     end
   end
 end
+
 
 def main
   info_hash = {}
