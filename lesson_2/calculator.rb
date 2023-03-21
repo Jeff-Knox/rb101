@@ -1,127 +1,162 @@
+# Calculator2.0
+# Changes:
+# - Almost entirely refactored, goal of creating more modular, readable code.
+# - Run through Rubocop, only gets 1 offense: calculate_result() does too much.
+# -- I could refactor to two methods, one that gets the operator type, and the other calculates based on that input
+# -- I don't feel that is particularly necessary as of right now, so we will leave it
+# Order of methods is still pretty all over the place. Haven't learned proper ordering of methods, so I'll likely come back and work on that
 
-# Gets number, checks if user is trying to access memory. If they are, returns the number stored at index specified
-def get_number(pass_mem = [])
-  num = ''
-  loop do
-    puts "Enter number. If value is stored in memory, type 'mem' followed by the index it was stored at. i.e. 'mem1'."
-    num = gets.chomp
-    if num =~ /mem/
-        num_index = num.delete('mem').to_i
-        puts "Found number: #{pass_mem[num_index]}"
-        num = pass_mem[num_index]
-        if num == nil
-          puts "Number not found in memory slot #{num_index}. Try again!" 
-          next
-        end
-      break
-    elsif num.to_i.to_s == num
-      num = num.to_i
-      break
-    end
-    puts "Number invalid. Try again."
+OPERATORS = ['add', 'subtract', 'multiply', 'divide', 'modulo', 'exponent']
+
+def convert_operators_to_s(operators)
+  op_string = ''
+  operators.each do |operator|
+    op_string += "[#{operator}]"
   end
-  num
+  op_string
 end
 
-# Gets the operation type the user wishes to perform, checks it against a list of options allowed.
-def get_operation
-  operation_to_perform = ''
-  loop do
-    puts "Enter the operation you would like to perform [add][subtract][multiply][divide][modulo][exponent]"
-    operation_to_perform = gets.chomp
-    option_valid = false
-    options = ['add', 'subtract', 'multiply', 'divide', 'modulo', 'exponent']
-    options.each do |option|
-      if operation_to_perform == option
-        option_valid = true
-      end
-      break if option_valid
-    end
-    if option_valid
-      puts "operation valid"
-      break
-    end
-    puts "Operator invalid. Try again."
-  end
-  operation_to_perform 
+def display_prompt(prompt, y_n = false)
+  prompt << ' [y/n]' if y_n
+  puts "=> " << prompt
 end
 
-# Calculates and prints result based on the info passed in through a hash.
-def calculate_result(info = {})
-  first_num = info[:num1]
-  second_num = info[:num2]
-  operation_to_perform = info[:operation]
+def accessing_mem?(input)
+  input =~ /mem/ ? true : false
+end
 
-  case operation_to_perform
-  when "add"
-    puts "Calculating result..."
-    result = first_num + second_num
-    puts "#{first_num} + #{second_num} = #{result}"
-    result
-  when "subtract"
-    result = first_num - second_num
-    puts "Calculating result..."
-    puts "#{first_num} - #{second_num} = #{result}"
-    result
-  when "multiply"
-    result = first_num * second_num
-    puts "Calculating result..."
-    puts "#{first_num} * #{second_num} = #{result}"
-    result
-  when "divide"
-    result = first_num / second_num
-    puts "Calculating result..."
-    puts "#{first_num} / #{second_num} = #{result}"
-    result
-  when "modulo"
-    result = first_num % second_num
-    puts "Calculating result..."
-    puts "#{first_num} % #{second_num} = #{result}"
-    result
-  when "exponent"
-    result = first_num**second_num
-    puts "Calculating result..."
-    puts "#{first_num} ^ #{second_num} = #{result}"
-    result
-  else
-    puts "What the heck did you just put?!?"
+def memory_valid?(memory_arr, mem_index)
+  !memory_arr[mem_index].nil?
+end
+
+def num_valid?(input)
+  input.to_i.to_s == input
+end
+
+def operator_valid?(input)
+  options = OPERATORS
+  options.each do |option|
+    return true if input.downcase == option
+  end
+  false
+end
+
+def y_n?(input)
+  return true if input.downcase == 'y' || input.downcase == 'n'
+  false
+end
+
+def check_mem(user_input, memory_arr)
+  return unless accessing_mem?(user_input)
+  if memory_valid?(memory_arr, user_input.delete('mem').to_i)
+    display_prompt("Value found: #{memory_arr[user_input.delete('mem').to_i]}")
+    return true
+  end
+  display_prompt('value not found at memory index.')
+  false
+end
+
+def get_user_input_type(user_input, memory_arr)
+  return :mem if check_mem(user_input, memory_arr)
+  return :num if num_valid?(user_input)
+  return :op if operator_valid?(user_input)
+  return :y_n if y_n?(user_input)
+  nil
+end
+
+def mem_to_num(pass_mem_array, mem_index)
+  pass_mem_array[mem_index]
+end
+
+def convert_input(user_input, input_type, memory_arr)
+  case input_type
+  when :num then user_input.to_i
+  when :mem then memory_arr[user_input.delete('mem').to_i]
+  when :op  then user_input.downcase
+  when :y_n then user_input.downcase
+  else display_prompt("ERROR: I DONT KNOW HOW I GOT HERE")
   end
 end
 
-# Generic [y/n] prompt. Can modify the prompt message by passing in a string.
-def get_y_n?(prompt = "Default y/n prompt")
+def get_user_input(prompt_for_user, type_out, memory_arr = [])
   loop do
-    puts prompt << " [y/n]"
+    display_prompt(prompt_for_user)
     user_input = gets.chomp
-    if user_input == 'y'
-      return true
-    elsif user_input == 'n'
-      return false
-    else
-      puts "Invalid input. Try again."
-      next
-    end
+    user_input_type = get_user_input_type(user_input, memory_arr)
+    new_input = convert_input(user_input, user_input_type, memory_arr)
+    return new_input if type_out.include? user_input_type
+    display_prompt("ERROR: user input does not match desired input. Try again.")
   end
 end
 
+def set_number(memory_array, ordinal)
+  set_num_prompt = "Enter #{ordinal} number."
+  set_num_prompt << " Type 'mem' followed by the memory index to access memory"
+  set_num_prompt << " i.e. 'mem1'."
+  get_user_input(set_num_prompt, [:mem, :num], memory_array)
+end
+
+def set_operator
+  set_op_prompt = 'Enter the operation you would like to perform: '
+  set_op_prompt << convert_operators_to_s(OPERATORS)
+  get_user_input(set_op_prompt, [:op])
+end
+
+def set_inputs(memory_arr)
+  inputs_hash = {
+    num1: set_number(memory_arr, '1st'),
+    operator: set_operator,
+    num2: set_number(memory_arr, '2nd')
+  }
+  inputs_hash
+end
+
+def calculate_result(info = {})
+  case info[:operator]
+  when 'add'      then info[:num1] + info[:num2]
+  when 'subtract' then info[:num1] - info[:num2]
+  when 'multiply' then info[:num1] * info[:num2]
+  when 'divide'   then info[:num1] / info[:num2]
+  when 'modulo'   then info[:num1] % info[:num2]
+  when 'exponent' then info[:num1]**info[:num2]
+  else display_prompt('aahhhhhhhhhhhhhhh')
+  end
+end
+
+def display_result(result, info = {})
+  display_prompt('Calculating results...')
+  results = "#{info[:num1]} #{info[:operator]} #{info[:num2]} = #{result}"
+  display_prompt(results)
+end
+
+def end_session
+  if get_yes_no("Are you finished Calculating? [y/n] ")
+    display_prompt("GOODBYE")
+    exit
+  end
+end
+
+def get_yes_no(prompt)
+  user_in = get_user_input(prompt, [:y_n])
+  return true if user_in == 'y'
+  return false if user_in == 'n'
+end
+
+def add_to_mem(memory_arr, value)
+  if get_yes_no("Add #{value} to memory? [y/n] ")
+    memory_arr.push(value.to_i)
+    display_prompt("#{value} added to mem#{memory_arr.length - 1}")
+  end
+end
 
 def main
-  info_hash = {}
   mem = []
-
   loop do
-    info_hash[:num1] = get_number(mem)
-    info_hash[:operation] = get_operation
-    info_hash[:num2] = get_number
-    result = calculate_result(info_hash)
-    if get_y_n?("Do you want to store in mem?")
-      mem.push(result) 
-      puts "#{result} stored at mem#{mem.length - 1}"
-    end 
-    unless get_y_n?("Do you want to continue?")
-      puts "Thanks for using my calculator!"
-      break
-    end
+    inputs_hash = set_inputs(mem)
+    result = calculate_result(inputs_hash)
+    display_result(result, inputs_hash)
+    add_to_mem(mem, result)
+    end_session
   end
 end
 
