@@ -1,2 +1,10 @@
-result: <<-DISPLAY
-+%{}
+greeting: "Hey %{name}, here's the info on your loan!"
+display_borders: "+%{years}+%{payments_length}+%{monthly_payment}+%{principal}+%{interest}+%{total}"
+header: "| Years | Payments | (APR) | Monthly Payment |  Principal  |  Interest  | Total Amount |"
+
+# +-------+----------+-------+-----------------+-------------+------------+--------------+
+# | Years | Payments | (APR) | Monthly Payment |  Principal  |  Interest  | Total Amount |
+# +-------+----------+-------+-----------------+-------------+------------+--------------+
+# |   5   |    60    |  10%  |    $1500.00     | $500,000.00 | $50,000.00 | $550,000.00  |
+# +-------+----------+-------+-----------------+-------------+------------+--------------+
+
