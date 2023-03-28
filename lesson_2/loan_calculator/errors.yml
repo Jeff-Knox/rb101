@@ -1,0 +1,5 @@
+name_error: "%{user_input} is not a valid name, please try again!"
+type_error: "%{user_input} is not a valid type of loan, please try again!"
+amount_error: "%{user_input} is not a valid number for the amount of the loan, please try again!"
+length_error: "%{user_input} is not a valid length for the loan, please try again!"
+apr_error: "%{user_input} is not a valid number for the apr of the loan, please try again!"
