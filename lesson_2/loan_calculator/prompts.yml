@@ -1,6 +1,5 @@
 welcome: "Hey there, lets calculate some loan payments!"
 ask_name: "What's your name?"
-ask_type: "What type of loan do you want to calculate?\n[Car]\n[Mortgage]"
 ask_amount: "What is the amount of the loan?"
 ask_length: "What is the length of the loan in years?"
 ask_apr: "What is the annual percentage rate (APR), as a decimal? i.e. 4.5% = 0.045"
