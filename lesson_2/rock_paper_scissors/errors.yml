@@ -1,2 +1,2 @@
-invalid_wep: "%{invalid_input} is not a valid weapon! Try again!"
-invalid_y_n: "%{invalid_input} is not a valid answer! Try again!"
+wep: "%{invalid_input} is not a valid weapon! Try again!"
+y_n: "%{invalid_input} is not a valid answer! Try again!"
